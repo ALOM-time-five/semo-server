@@ -1,5 +1,6 @@
 package arom_semo.server.domain.chat.service;
 
+import arom_semo.server.domain.chat.model.MessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,20 +13,28 @@ import org.springframework.stereotype.Service;
 @Service @Slf4j
 @RequiredArgsConstructor
 public class RedisSubscriber implements MessageListener {
+    /**
+     * Redis의 메시지를 수신하여 처리하는 역할을 합니다.
+     * MessageListener 인터페이스를 구현하여 Redis 메시지를 리스닝
+     */
+
     private final ObjectMapper objectMapper;
     private final RedisTemplate redisTemplate;
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final SimpMessageSendingOperations messagingTemplate; // WebSocket 메시지를 특정 클라이언트에게 전송하는데 사용
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
+            // TODO: 2024-08-21 : 메세지 객체(ChatMessageRequest) 구현,
+
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-
+            // redis 메세지 직렬화하여 문자열로 변환
             ChatMessageRequest roomMessage = objectMapper.readValue(publishMessage, ChatMessageRequest.class);
-
+            // 문자열 -> 객체로 변환
             if (roomMessage.getType().equals(MessageType.TALK)) {
                 GetChatMessageResponse chatMessageResponse = new GetChatMessageResponse(roomMessage);
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), chatMessageResponse);
+                // 해당 채팅방에 메세지 전송 및 구독한 클라이언트는 메세지 수신
             }
 
         } catch (Exception e) {
