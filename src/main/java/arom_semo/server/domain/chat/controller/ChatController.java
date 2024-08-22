@@ -2,6 +2,7 @@ package arom_semo.server.domain.chat.controller;
 
 import arom_semo.server.domain.chat.model.ChatMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 
-@RestController
+@RestController @Slf4j
 @RequiredArgsConstructor
 public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
@@ -23,6 +24,9 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(ChatMessage chatMessage) {
         //chatMessageRepository.save(chatMessage);  // MongoDB에 저장
+        log.info("chatMessage = {}", chatMessage);
+        log.info("chatMessage.toString() = {}", chatMessage.getSender());
+        log.info("chatMessage.toString() = {}", chatMessage.getRoomId());
         redisTemplate.convertAndSend("chat", chatMessage);  // Redis를 통해 메시지 전송
     }
 

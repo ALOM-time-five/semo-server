@@ -6,6 +6,7 @@ public class LeaveMessage implements Message{
 
     private String sender;
     private String roomId;
+    private MessageType type;
 
     @Override
     public MessageType getType() {

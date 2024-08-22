@@ -1,6 +1,8 @@
 package arom_semo.server.global.config;
 
 import arom_semo.server.domain.chat.service.RedisSubscriber;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -12,7 +14,10 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig {
+
+    private final ObjectMapper objectMapper;
 
     /**
      * Redis Channel(Topic)로 부터 메시지를 받고, 주입된 리스너들에게 비동기적으로 dispatch 하는 역할을 수행하는 컨테이너이다.
@@ -44,12 +49,17 @@ public class RedisConfig {
      * Json 포맷 형식으로 메시지를 교환하기 위해 ValueSerializer에 Jackson2JsonRedisSerializer로 설정
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate
-            (RedisConnectionFactory connectionFactory) { // (3)
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) { // (3)
+
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(connectionFactory);
+        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+
         redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        redisTemplate.setValueSerializer(serializer);
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(serializer);
+
         return redisTemplate;
     }
 
@@ -58,6 +68,6 @@ public class RedisConfig {
      */
     @Bean
     public ChannelTopic channelTopic() { // (4)
-        return new ChannelTopic("chatroom");
+        return new ChannelTopic("chat");
     }
 }

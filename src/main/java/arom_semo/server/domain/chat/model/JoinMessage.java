@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 public class JoinMessage implements Message {
     private String sender;
     private String roomId;
+    private MessageType type;
 
     @Override
     public MessageType getType() {
