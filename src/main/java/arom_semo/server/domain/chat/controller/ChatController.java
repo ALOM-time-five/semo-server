@@ -1,5 +1,6 @@
 package arom_semo.server.domain.chat.controller;
 
+import arom_semo.server.domain.chat.model.ChatMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,6 @@ public class ChatController {
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(ChatMessage chatMessage) {
-        chatMessage.setTimestamp(LocalDateTime.now());
         //chatMessageRepository.save(chatMessage);  // MongoDB에 저장
         redisTemplate.convertAndSend("chat", chatMessage);  // Redis를 통해 메시지 전송
     }

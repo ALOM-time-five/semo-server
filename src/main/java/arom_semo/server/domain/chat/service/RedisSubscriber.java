@@ -29,13 +29,21 @@ public class RedisSubscriber implements MessageListener {
 
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
             // redis 메세지 직렬화하여 문자열로 변환
-            ChatMessageRequest roomMessage = objectMapper.readValue(publishMessage, ChatMessageRequest.class);
+
+            //ChatMessageRequest roomMessage = objectMapper.readValue(publishMessage, ChatMessageRequest.class);
+            MessageType messageType = objectMapper.readValue(publishMessage, MessageType.class);
+            arom_semo.server.domain.chat.model.Message chatMessage = messageType.getMessage();
+
+            objectMapper.readerForUpdating(chatMessage).readValue(publishMessage); // 변환한 Message 객체를 업데이트
+            chatMessage.process(messagingTemplate); // 해당 메시지를 처리
+
             // 문자열 -> 객체로 변환
-            if (roomMessage.getType().equals(MessageType.TALK)) {
+            /*if (roomMessage.getType().equals(MessageType.TALK)) {
                 GetChatMessageResponse chatMessageResponse = new GetChatMessageResponse(roomMessage);
                 messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), chatMessageResponse);
                 // 해당 채팅방에 메세지 전송 및 구독한 클라이언트는 메세지 수신
-            }
+            }*/
+
 
         } catch (Exception e) {
             //throw new ChatMessageNotFoundException();
