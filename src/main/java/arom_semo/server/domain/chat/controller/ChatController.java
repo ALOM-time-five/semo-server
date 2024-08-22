@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController @Slf4j
 @RequiredArgsConstructor
@@ -25,12 +26,13 @@ public class ChatController {
     public void sendMessage(ChatMessage chatMessage) {
         //chatMessageRepository.save(chatMessage);  // MongoDB에 저장
         log.info("chatMessage = {}", chatMessage);
-        log.info("chatMessage.toString() = {}", chatMessage.getSender());
-        log.info("chatMessage.toString() = {}", chatMessage.getRoomId());
+        log.info("chatMessage.sender() = {}", chatMessage.getSender());
+        log.info("chatMessage.roomId() = {}", chatMessage.getRoomId());
         redisTemplate.convertAndSend("chat", chatMessage);  // Redis를 통해 메시지 전송
     }
 
-    /*@GetMapping("/api/chat/history")
+
+    /*`@GetMapping("/api/chat/history")
     public ResponseEntity<List<ChatMessage>> getChatHistory(@RequestParam String roomId) {
         List<ChatMessage> messages = chatMessageRepository.findByRoomId(roomId);
         return new ResponseEntity<>(messages, HttpStatus.OK);

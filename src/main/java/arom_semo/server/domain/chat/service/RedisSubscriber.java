@@ -26,33 +26,21 @@ public class RedisSubscriber implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] pattern) {
         try {
-            // TODO: 2024-08-21 : 메세지 객체(ChatMessageRequest) 구현,
-            log.info("onMessage 시작");
             String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-            log.info("Received from Redis: {}", publishMessage);
-            // redis 메세지 직렬화하여 문자열로 변환
+            log.info("Received from Redis: {}", publishMessage); // redis 메세지 직렬화하여 문자열로 변환
 
-            //ChatMessageRequest roomMessage = objectMapper.readValue(publishMessage, ChatMessageRequest.class);
             ObjectNode rootNode = (ObjectNode) objectMapper.readTree(publishMessage);
             String messageTypeStr = rootNode.get("type").asText();
             log.info("Parsed message type: {}", messageTypeStr);
 
             // 나머지 필드 처리를 위해 "type" 필드만 따로 처리
             MessageType messageType = MessageType.valueOf(messageTypeStr);
-            arom_semo.server.domain.chat.model.Message chatMessage = messageType.getMessage();
+            arom_semo.server.domain.chat.model.Message messageValue = messageType.getMessage();
             log.info("Parsed message type: {}", messageType);
 
-            objectMapper.readerForUpdating(chatMessage).readValue(publishMessage); // 변환한 Message 객체를 업데이트
-            log.info("Processed message: {}", chatMessage);
-            chatMessage.process(messagingTemplate); // 해당 메시지를 처리
-
-            // 문자열 -> 객체로 변환
-            /*if (roomMessage.getType().equals(MessageType.TALK)) {
-                GetChatMessageResponse chatMessageResponse = new GetChatMessageResponse(roomMessage);
-                messagingTemplate.convertAndSend("/sub/chat/room/" + roomMessage.getRoomId(), chatMessageResponse);
-                // 해당 채팅방에 메세지 전송 및 구독한 클라이언트는 메세지 수신
-            }*/
-
+            objectMapper.readerForUpdating(messageValue).readValue(publishMessage); // 변환한 Message 객체를 업데이트
+            log.info("Processed message: {}", messageValue);
+            messageValue.process(messagingTemplate); // 해당 메시지를 처리
 
         } catch (Exception e) {
             //throw new ChatMessageNotFoundException();
