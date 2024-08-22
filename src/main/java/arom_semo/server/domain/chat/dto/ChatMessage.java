@@ -1,22 +1,27 @@
-package arom_semo.server.domain.chat.model;
+package arom_semo.server.domain.chat.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
-public class JoinMessage implements Message {
+public class ChatMessage implements Message{
     private String sender;
+    private String senderImageUrl;
+    private String content;
     private String roomId;
     private LocalDateTime localDateTime;
     private MessageType type;
 
+    public ChatMessage() {
+        this.localDateTime = LocalDateTime.now();
+    }
 
-    public JoinMessage(String sender, String roomId, MessageType type) {
+    public ChatMessage(String sender, String senderImageUrl, String content, String roomId, MessageType type) {
         this.sender = sender;
+        this.senderImageUrl = senderImageUrl;
+        this.content = content;
         this.roomId = roomId;
         this.localDateTime = LocalDateTime.now();
         this.type = type;
@@ -24,12 +29,11 @@ public class JoinMessage implements Message {
 
     @Override
     public MessageType getType() {
-        return MessageType.JOIN;
+        return MessageType.CHAT;
     }
 
     @Override
     public void process(SimpMessageSendingOperations messagingTemplate) {
-        String joinMessageContent = sender + "님이 입장하셨습니다.";
-        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId, joinMessageContent);
+        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId, this);
     }
 }
