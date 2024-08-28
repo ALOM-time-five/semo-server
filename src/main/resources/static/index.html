@@ -35,7 +35,8 @@
             sender: 'User1',
             senderImageUrl: 'https://example.com/image.png',
             content: messageInput.value,
-            roomId: '12345'
+            roomId: '12345',
+            type: "CHAT"
         };
         stompClient.send("/pub/chat.sendMessage", {}, JSON.stringify(message));
         messageInput.value = '';

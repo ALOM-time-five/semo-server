@@ -4,7 +4,6 @@ import arom_semo.server.domain.chat.model.message.MessageType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
@@ -13,7 +12,5 @@ public class MessageDto {
     private Long userId;
     private String senderImageUrl;
     private String content;
-    private String roomId;
-    private LocalDateTime localDateTime;
     private MessageType type;
 }

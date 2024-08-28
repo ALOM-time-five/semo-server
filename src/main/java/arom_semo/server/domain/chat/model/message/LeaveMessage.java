@@ -1,8 +1,11 @@
 package arom_semo.server.domain.chat.model.message;
 
+import arom_semo.server.global.model.BaseEntity;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -11,14 +14,21 @@ import java.time.LocalDateTime;
 @Getter
 @Document(collection = "chat_messages")
 @NoArgsConstructor
-public class LeaveMessage implements Message{
+public class LeaveMessage extends BaseEntity implements Message {
     @Id
     private String id;
     private String sender;
     private String roomId;
-    private LocalDateTime localDateTime;
+    private Long userId;
     private MessageType type;
 
+    @Builder
+    public LeaveMessage(String sender, String roomId, Long userId, MessageType type) {
+        this.sender = sender;
+        this.roomId = roomId;
+        this.userId = userId;
+        this.type = type;
+    }
 
     @Override
     public MessageType getType() {

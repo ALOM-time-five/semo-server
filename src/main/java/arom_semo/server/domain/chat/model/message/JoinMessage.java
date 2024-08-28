@@ -1,6 +1,8 @@
 package arom_semo.server.domain.chat.model.message;
 
+import arom_semo.server.global.model.BaseEntity;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -11,19 +13,19 @@ import java.time.LocalDateTime;
 @Getter
 @Document(collection = "chat_messages")
 @NoArgsConstructor
-public class JoinMessage implements Message {
+public class JoinMessage extends BaseEntity implements Message {
     @Id
     private String id;
     private String sender;
+    private Long userId;
     private String roomId;
-    private LocalDateTime localDateTime;
     private MessageType type;
 
-
-    public JoinMessage(String sender, String roomId, MessageType type) {
+    @Builder
+    public JoinMessage(String sender, Long userId,String roomId, MessageType type) {
         this.sender = sender;
         this.roomId = roomId;
-        this.localDateTime = LocalDateTime.now();
+        this.userId = userId;
         this.type = type;
     }
 

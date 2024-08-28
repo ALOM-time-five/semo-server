@@ -2,9 +2,11 @@ package arom_semo.server.domain.chat.controller;
 
 import arom_semo.server.domain.chat.dto.MessageDto;
 import arom_semo.server.domain.chat.repository.ChatMessageRepository;
+import arom_semo.server.domain.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,17 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController @Slf4j
 @RequiredArgsConstructor
 public class ChatController {
-    private final SimpMessagingTemplate messagingTemplate;
-    private final ChatMessageRepository chatMessageRepository;
+    //private final SimpMessagingTemplate messagingTemplate;
+    private final ChatService chatService;
     private final RedisTemplate<String, Object> redisTemplate;
 
-    @MessageMapping("/chat.sendMessage")
-    public void sendMessage(MessageDto messageDto) {
-        //messageEntityRepository.save(chatMessageDto);  // MongoDB에 저장
-        log.info("chatMessage = {}", messageDto);
-        log.info("chatMessage.sender() = {}", messageDto.getSender());
-        log.info("chatMessage.roomId() = {}", messageDto.getRoomId());
-        redisTemplate.convertAndSend("chat", messageDto);  // Redis를 통해 메시지 전송
+    @MessageMapping("/chat/room/{id}")
+    public void sendMessage(@DestinationVariable("id") Long id, MessageDto messageDto) {
+        chatService.saveMessage(id, messageDto);
+        redisTemplate.convertAndSend("/sub/chat/room/" + id, messageDto);  // Redis를 통해 메시지 전송
+        // TODO: 2024-08-28
+        //  1. messageDto 대신 이를 통한 생성된 구체 객체를 넘기기( redisTemplate.convertAndSend("chat", messageDto); )
     }
 
 

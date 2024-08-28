@@ -18,7 +18,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     private final ObjectMapper objectMapper;
-    private final RedisSubscriber subscriber;
 
     /**
      * Redis Channel(Topic)로 부터 메시지를 받고, 주입된 리스너들에게 비동기적으로 dispatch 하는 역할을 수행하는 컨테이너이다.
@@ -41,8 +40,8 @@ public class RedisConfig {
      * 실제 메시지를 처리하는 비즈니스 로직이 담긴 Subscriber Bean을 추가해준다.
      */
     @Bean
-    public MessageListenerAdapter listenerAdapter() { // (2)
-        return new MessageListenerAdapter(subscriber, "onMessage");
+    public MessageListenerAdapter listenerAdapter(RedisSubscriber redisSubscriber) { // (2)
+        return new MessageListenerAdapter(redisSubscriber, "onMessage");
     }
 
     /**
