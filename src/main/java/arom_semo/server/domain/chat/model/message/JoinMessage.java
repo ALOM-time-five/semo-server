@@ -1,14 +1,19 @@
-package arom_semo.server.domain.chat.dto;
+package arom_semo.server.domain.chat.model.message;
 
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Document(collection = "chat_messages")
 @NoArgsConstructor
 public class JoinMessage implements Message {
+    @Id
+    private String id;
     private String sender;
     private String roomId;
     private LocalDateTime localDateTime;

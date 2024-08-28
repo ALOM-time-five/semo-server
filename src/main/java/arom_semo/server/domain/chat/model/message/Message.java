@@ -1,4 +1,4 @@
-package arom_semo.server.domain.chat.dto;
+package arom_semo.server.domain.chat.model.message;
 
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
