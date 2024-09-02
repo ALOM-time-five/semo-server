@@ -24,31 +24,43 @@ public class ChatServiceImp implements ChatService{
     private Message createMessage(Long id, MessageDto messageDto) {
         MessageType type = messageDto.getType();
         if(type == MessageType.CHAT){
-             return ChatMessage.builder()
-                    .roomId(String.valueOf(id))
-                    .userId(messageDto.getUserId())
-                    .sender(messageDto.getSender())
-                    .senderImageUrl(messageDto.getSenderImageUrl())
-                    .content(messageDto.getContent())
-                    .type(messageDto.getType())
-                    .build();
+             return ofChatMessage(id, messageDto);
         }
         if(type == MessageType.JOIN){
-            return JoinMessage.builder()
-                    .roomId(String.valueOf(id))
-                    .userId(messageDto.getUserId())
-                    .sender(messageDto.getSender())
-                    .type(messageDto.getType())
-                    .build();
+            return ofJoinMessage(id, messageDto);
         }
         if(type == MessageType.LEAVE){
-            return LeaveMessage.builder()
-                    .roomId(String.valueOf(id))
-                    .sender(messageDto.getSender())
-                    .userId(messageDto.getUserId())
-                    .type(messageDto.getType())
-                    .build();
+            return ofLeaveMessage(id, messageDto);
         }
         return null;
+    }
+
+    private static LeaveMessage ofLeaveMessage(Long id, MessageDto messageDto) {
+        return LeaveMessage.builder()
+                .roomId(String.valueOf(id))
+                .sender(messageDto.getSender())
+                .userId(messageDto.getUserId())
+                .type(messageDto.getType())
+                .build();
+    }
+
+    private static JoinMessage ofJoinMessage(Long id, MessageDto messageDto) {
+        return JoinMessage.builder()
+                .roomId(String.valueOf(id))
+                .userId(messageDto.getUserId())
+                .sender(messageDto.getSender())
+                .type(messageDto.getType())
+                .build();
+    }
+
+    private ChatMessage ofChatMessage(Long id, MessageDto messageDto) {
+        return ChatMessage.builder()
+                .roomId(String.valueOf(id))
+                .userId(messageDto.getUserId())
+                .sender(messageDto.getSender())
+                .senderImageUrl(messageDto.getSenderImageUrl())
+                .content(messageDto.getContent())
+                .type(messageDto.getType())
+                .build();
     }
 }
