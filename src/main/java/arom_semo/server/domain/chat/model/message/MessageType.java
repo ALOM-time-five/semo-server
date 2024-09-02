@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MessageType {
     CHAT(new ChatMessage()),
-    JOIN(new JoinMessage()),
-    LEAVE(new LeaveMessage());
+    JOIN(new ChatMessage()),
+    LEAVE(new ChatMessage());
     //NOTIFICATION(new NotificationMessage());
 
-    private final Message message;
+    private final ChatMessage message;
 
 }

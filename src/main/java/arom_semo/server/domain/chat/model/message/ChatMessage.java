@@ -8,12 +8,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Document(collection = "chat_messages")
 @NoArgsConstructor
-public class ChatMessage extends MongoBaseEntity implements Message{
+public class ChatMessage extends MongoBaseEntity /*implements Message*/{
     @Id
     private String id;
     private String sender;
@@ -33,13 +31,21 @@ public class ChatMessage extends MongoBaseEntity implements Message{
         this.type = type;
     }
 
-    @Override
+    /*@Override
     public MessageType getType() {
         return MessageType.CHAT;
-    }
+    }*/
 
-    @Override
+    //@Override
     public void process(SimpMessageSendingOperations messagingTemplate) {
-        messagingTemplate.convertAndSend("/sub/chat/room/" + roomId, this);
+
+        String destination = "/sub/chat/room/" + roomId;
+        if (type == MessageType.CHAT) {
+            messagingTemplate.convertAndSend(destination, this);
+        } else if (type == MessageType.JOIN) {
+            messagingTemplate.convertAndSend(destination, sender + "님이 입장하셨습니다.");
+        } else if (type == MessageType.LEAVE) {
+            messagingTemplate.convertAndSend(destination, sender + "님이 퇴장하셨습니다.");
+        }
     }
 }

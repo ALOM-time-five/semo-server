@@ -1,5 +1,6 @@
 package arom_semo.server.domain.chat.service;
 
+import arom_semo.server.domain.chat.model.message.ChatMessage;
 import arom_semo.server.domain.chat.model.message.MessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,7 +37,7 @@ public class RedisSubscriber implements MessageListener {
 
             // 나머지 필드 처리를 위해 "type" 필드만 따로 처리
             MessageType messageType = MessageType.valueOf(messageTypeStr);
-            arom_semo.server.domain.chat.model.message.Message messageValue = messageType.getMessage();
+            ChatMessage messageValue = messageType.getMessage();
             log.info("Parsed message type: {}", messageType);
 
             objectMapper.readerForUpdating(messageValue).readValue(publishMessage); // 변환한 Message 객체를 업데이트
