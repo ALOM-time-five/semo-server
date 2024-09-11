@@ -16,17 +16,29 @@ public class MessageResponseDto {
     private String senderImageUrl;
     private String content;
     private MessageType type;
+    private String createdDate;
 
     @Builder
-    public MessageResponseDto(String roomId, String sender, Long userId, String senderImageUrl, String content, MessageType type) {
+    public MessageResponseDto(String roomId, String sender, Long userId, String senderImageUrl, String content, MessageType type, String createdDate) {
         this.roomId = roomId;
         this.sender = sender;
         this.userId = userId;
         this.senderImageUrl = senderImageUrl;
         this.content = content;
         this.type = type;
+        this.createdDate = createdDate;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "MessageResponseDto{" +
+                "roomId='" + roomId + '\'' +
+                ", sender='" + sender + '\'' +
+                ", userId=" + userId +
+                ", senderImageUrl='" + senderImageUrl + '\'' +
+                ", content='" + content + '\'' +
+                ", type=" + type +
+                ", createdDate='" + createdDate + '\'' +
+                '}';
+    }
 }

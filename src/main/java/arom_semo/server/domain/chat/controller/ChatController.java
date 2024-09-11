@@ -13,8 +13,10 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController @Slf4j
@@ -24,7 +26,7 @@ public class ChatController {
     private final RedisTemplate<String, Object> redisTemplate;
 
     @MessageMapping("/chat/room/{id}")
-    public void sendMessage(@DestinationVariable("id") Long id, @Valid MessageRequestDto messageDto) {
+    public void sendMessage(@DestinationVariable("id") String id, @Valid MessageRequestDto messageDto) {
         chatService.saveMessage(id, messageDto);
         redisTemplate.convertAndSend("/sub/chat/room/" + id, messageDto);  // Redis를 통해 메시지 전송
         // TODO: 2024-08-28
@@ -33,9 +35,10 @@ public class ChatController {
 
 
     @GetMapping("/api/chat/room/{id}")
-    public ResponseEntity<List<MessageResponseDto>> getChatHistory(@PathVariable String roomId) {
+    public ResponseEntity<List<MessageResponseDto>> getChatHistory(@PathVariable("id") String roomId
+            , @RequestParam(name = "lastId") String lastId) {
 
-        return new ResponseEntity<>(chatService.findMessagesBy(roomId), HttpStatus.OK);
+        return new ResponseEntity<>(chatService.findMessagesBy(roomId, lastId), HttpStatus.OK);
     }
 
     // TODO: 2024-09-02 : ㅇㅇㅇ

@@ -1,12 +1,10 @@
 package arom_semo.server.domain.chat.model.message;
 
-import arom_semo.server.domain.chat.model.room.ChatRoom;
 import arom_semo.server.global.model.MongoBaseEntity;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
@@ -20,24 +18,23 @@ public class ChatMessage extends MongoBaseEntity{
     private Long userId;
     private String senderImageUrl;
     private String content;
-    @DBRef
-    private ChatRoom chatRoom;
+    private String roomId;
     private MessageType type;
 
     @Builder
-    public ChatMessage(String sender, Long userId, String senderImageUrl, String content, ChatRoom chatRoom, MessageType type) {
+    public ChatMessage(String sender, Long userId, String senderImageUrl, String content, String roomId, MessageType type) {
         this.sender = sender;
         this.userId = userId;
         this.senderImageUrl = senderImageUrl;
         this.content = content;
-        this.chatRoom = chatRoom;
+        this.roomId = roomId;
         this.type = type;
     }
 
     //@Override
     public void process(SimpMessageSendingOperations messagingTemplate) {
 
-        String destination = "/sub/chat/room/" + chatRoom.getId();
+        String destination = "/sub/chat/room/" + roomId;
         if (type == MessageType.CHAT) {
             messagingTemplate.convertAndSend(destination, this);
         } else if (type == MessageType.JOIN) {
